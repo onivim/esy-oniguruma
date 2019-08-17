@@ -8,7 +8,7 @@
         ["bash", "-c", "#{os == 'windows' ? 'CC=x86_64-w64-mingw32-gcc ./configure --prefix=$cur__install' : './configure --prefix=$cur__install'}"],
         ["make", "install"]
     ],
-    "buildsInSource": "_build",
+    "buildsInSource": true,
     "exportedEnv": {
         "ONIGURAMA_INCLUDE_PATH": {
             "val": "#{self.install / 'include'}",
