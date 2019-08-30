@@ -1,7 +1,7 @@
 {
-  "name": "esy-onigurama",
+  "name": "esy-oniguruma",
   "version": "5.9.1000",
-  "description": "esy-enabled build for onigurama",
+  "description": "esy-enabled build for oniguruma",
   "license": "MIT",
   "esy": {
     "build": [
@@ -10,11 +10,11 @@
     ],
     "buildsInSource": true,
     "exportedEnv": {
-        "ONIGURAMA_INCLUDE_PATH": {
+        "ONIGURUMA_INCLUDE_PATH": {
             "val": "#{self.install / 'include'}",
             "scope": "global"
         },
-        "ONIGURAMA_LIB_PATH": {
+        "ONIGURUMA_LIB_PATH": {
             "val": "#{self.lib}",
             "scope": "global"
         }
