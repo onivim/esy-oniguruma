@@ -7,8 +7,8 @@
 
 static int
 name_callback(const UChar* name, const UChar* name_end,
-	      int ngroup_num, int* group_nums,
-	      regex_t* reg, void* arg)
+              int ngroup_num, int* group_nums,
+              regex_t* reg, void* arg)
 {
   int i, gn, ref;
   char* s;
@@ -35,11 +35,14 @@ extern int main(int argc, char* argv[])
   static UChar* pattern = (UChar* )"(?<foo>a*)(?<bar>b*)(?<foo>c*)";
   static UChar* str = (UChar* )"aaabbbbcc";
 
+  OnigEncoding use_encs[] = { ONIG_ENCODING_ASCII };
+  onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
+
   r = onig_new(&reg, pattern, pattern + strlen((char* )pattern),
-	ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, ONIG_SYNTAX_DEFAULT, &einfo);
+        ONIG_OPTION_DEFAULT, ONIG_ENCODING_ASCII, ONIG_SYNTAX_DEFAULT, &einfo);
   if (r != ONIG_NORMAL) {
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r, &einfo);
+    onig_error_code_to_str((UChar* )s, r, &einfo);
     fprintf(stderr, "ERROR: %s\n", s);
     return -1;
   }
@@ -61,7 +64,10 @@ extern int main(int argc, char* argv[])
   }
   else { /* error */
     char s[ONIG_MAX_ERROR_MESSAGE_LEN];
-    onig_error_code_to_str(s, r);
+    onig_error_code_to_str((UChar* )s, r);
+    onig_region_free(region, 1 /* 1:free self, 0:free contents only */);
+    onig_free(reg);
+    onig_end();
     return -1;
   }
 

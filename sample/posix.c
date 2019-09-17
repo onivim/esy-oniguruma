@@ -16,6 +16,7 @@ static int x(regex_t* reg, unsigned char* pattern, unsigned char* str)
   if (r != 0 && r != REG_NOMATCH) {
     regerror(r, reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
+    regfree(reg);
     return -1;
   }
 
@@ -28,6 +29,7 @@ static int x(regex_t* reg, unsigned char* pattern, unsigned char* str)
       fprintf(stderr, "%d: %d-%d\n", i, pmatch[i].rm_so, pmatch[i].rm_eo);
     }
   }
+  regfree(reg);
   return 0;
 }
 
@@ -38,12 +40,16 @@ extern int main(int argc, char* argv[])
   regex_t reg;
   UChar* pattern;
 
-  /* default syntax (ONIG_SYNTAX_RUBY) */
+  reg_set_encoding(REG_POSIX_ENCODING_ASCII);
+
+  /* default syntax (ONIG_SYNTAX_ONIGURUMA) */
   pattern = (UChar* )"^a+b{2,7}[c-f]?$|uuu";
   r = regcomp(&reg, (char* )pattern, REG_EXTENDED);
   if (r) {
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
+    regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"aaabbbbd");
@@ -54,6 +60,8 @@ extern int main(int argc, char* argv[])
   if (r) {
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
+    regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"a+b{2,7}d?|uuu");
@@ -64,6 +72,8 @@ extern int main(int argc, char* argv[])
   if (r) {
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
+    regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"aaaabbbbbbd");
@@ -75,6 +85,8 @@ extern int main(int argc, char* argv[])
   if (r) {
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
+    regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"aaabbbbd)");
@@ -84,10 +96,12 @@ extern int main(int argc, char* argv[])
   if (r) {
     regerror(r, &reg, buf, sizeof(buf));
     fprintf(stderr, "ERROR: %s\n", buf);
+    regfree(&reg);
+    onig_end();
     return -1;
   }
   x(&reg, pattern, (UChar* )"a\nb\n");
 
-  regfree(&reg);
+  onig_end();
   return 0;
 }

@@ -1,6 +1,6 @@
 {
   "name": "esy-oniguruma",
-  "version": "5.9.1000",
+  "version": "6.9.3000",
   "description": "esy-enabled build for oniguruma",
   "license": "MIT",
   "esy": {
