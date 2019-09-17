@@ -5,7 +5,7 @@
   "license": "MIT",
   "esy": {
     "build": [
-        ["bash", "-c", "#{os == 'windows' ? 'CFLAGS=-O3 CC=x86_64-w64-mingw32-gcc ./configure --prefix=$cur__install' : 'CFLAGS=-O3 ./configure --prefix=$cur__install'}"],
+        ["bash", "-c", "#{os == 'windows' ? 'CFLAGS=-O3 CC=x86_64-w64-mingw32-gcc ./configure --prefix=$cur__install --disable-dependency-tracking' : 'CFLAGS=-O3 ./configure --prefix=$cur__install --disable-dependency-tracking'}"],
         ["make", "install"]
     ],
     "buildsInSource": true,
