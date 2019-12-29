@@ -1,0 +1,13 @@
+{
+  "source": "./package.json",
+  "scripts": {
+    "run": "esy '@test' x OniUnitTestRunner"
+  },
+  "override": {
+      "build": [
+          ["bash", "-c", "#{os == 'windows' ? 'CFLAGS=CC=x86_64-w64-mingw32-gcc ./configure --prefix=$cur__install --disable-dependency-tracking' : './configure --prefix=$cur__install --disable-dependency-tracking'}"],
+          ["make", "install"],
+          ["make", "all-test"]
+      ]
+  }
+}
