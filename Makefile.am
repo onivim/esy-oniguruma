@@ -14,7 +14,7 @@ EXTRA_DIST = oniguruma.pc.in HISTORY README_japanese README.md \
 	doc/SYNTAX.md doc/UNICODE_PROPERTIES \
 	src/Makefile.windows src/config.h.windows.in \
 	src/config.h.win32 src/config.h.win64 \
-	windows/testc.c contributed/libfuzzer-onig.cpp contributed/makefile
+	windows/testc.c
 
 bin_SCRIPTS = onig-config
 
@@ -39,9 +39,12 @@ pkgconfig_DATA = oniguruma.pc
 all-test:
 	cd test; make test
 
+archive:
+	git archive --format=tar --prefix=oniguruma/ HEAD | gzip > ../oniguruma-archive.tar.gz
+
 sanitize:
 	make clean
-	./configure CC=clang CFLAGS="-O -g -fsanitize=address"
+	./configure CFLAGS="-O -g -fsanitize=address" LDFLAGS="-fsanitize=address"
 	make
 	make all-test
 

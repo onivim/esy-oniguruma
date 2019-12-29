@@ -3,10 +3,15 @@
 lib_onig = ../src/libonig.la
 LDADD  = $(lib_onig)
 
+AM_CFLAGS   = -Wall
 AM_LDFLAGS  = -L$(prefix)/lib
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
-TESTS = encode listcap names posix simple sql syntax user_property callout echo count bug_fix
+if ENABLE_POSIX_API
+TESTS = encode listcap names posix simple sql syntax user_property callout echo count bug_fix regset
+else
+TESTS = encode listcap names simple sql syntax user_property callout echo count bug_fix regset
+endif
 
 check_PROGRAMS = $(TESTS)
 
@@ -22,6 +27,7 @@ callout_SOURCES = callout.c
 echo_SOURCES    = echo.c
 count_SOURCES   = count.c
 bug_fix         = bug_fix.c
+regset_SOURCES  = regset.c
 
 sampledir = .
 
@@ -29,7 +35,9 @@ test: $(TESTS)
 	$(sampledir)/encode
 	$(sampledir)/listcap
 	$(sampledir)/names
+if ENABLE_POSIX_API
 	$(sampledir)/posix
+endif
 	$(sampledir)/simple
 	$(sampledir)/sql
 	$(sampledir)/syntax
@@ -38,3 +46,4 @@ test: $(TESTS)
 	$(sampledir)/echo
 	$(sampledir)/count
 	$(sampledir)/bug_fix
+	$(sampledir)/regset

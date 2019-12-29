@@ -2,7 +2,7 @@
   mktable.c
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2019  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1102,7 +1102,7 @@ static int IsAscii(int enc ARG_UNUSED, int c)
 
 static int IsNewline(int enc ARG_UNUSED, int c)
 {
-  if (c == 0x0a) return 1;
+  if (c == NEWLINE_CODE) return 1;
   return 0;
 }
 

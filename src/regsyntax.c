@@ -2,7 +2,7 @@
   regsyntax.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2019  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2019  K.Kosako
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -152,7 +152,8 @@ OnigSyntaxType OnigSyntaxJava = {
       ONIG_SYN_OP2_PLUS_POSSESSIVE_INTERVAL | ONIG_SYN_OP2_CCLASS_SET_OP |
       ONIG_SYN_OP2_ESC_V_VTAB | ONIG_SYN_OP2_ESC_U_HEX4 |
       ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY )
-  , ( SYN_GNU_REGEX_BV | ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND )
+  , ( SYN_GNU_REGEX_BV | ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH |
+      ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND )
   , ONIG_OPTION_SINGLELINE
   ,
   {
@@ -185,7 +186,7 @@ OnigSyntaxType OnigSyntaxPerl = {
       ONIG_SYN_OP2_ESC_CAPITAL_K_KEEP |
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT )
-  , SYN_GNU_REGEX_BV
+  , SYN_GNU_REGEX_BV | ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH
   , ONIG_OPTION_SINGLELINE
   ,
   {
@@ -223,7 +224,7 @@ OnigSyntaxType OnigSyntaxPerl_NG = {
       ONIG_SYN_OP2_ESC_CAPITAL_R_GENERAL_NEWLINE |
       ONIG_SYN_OP2_ESC_CAPITAL_N_O_SUPER_DOT |
       ONIG_SYN_OP2_QMARK_PERL_SUBEXP_CALL )
-  , ( SYN_GNU_REGEX_BV |
+  , ( SYN_GNU_REGEX_BV | ONIG_SYN_ISOLATED_OPTION_CONTINUE_BRANCH |
       ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP |
       ONIG_SYN_ALLOW_MULTIPLEX_DEFINITION_NAME )
   , ONIG_OPTION_SINGLELINE

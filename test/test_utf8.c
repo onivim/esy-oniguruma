@@ -132,8 +132,9 @@ static void e(char* pattern, char* str, int error_no)
 
 extern int main(int argc, char* argv[])
 {
-  static OnigEncoding use_encs[] = { ONIG_ENCODING_UTF8 };
+  OnigEncoding use_encs[1];
 
+  use_encs[0] = ONIG_ENCODING_UTF8;
   onig_initialize(use_encs, sizeof(use_encs)/sizeof(use_encs[0]));
 
   err_file = stdout;
@@ -298,6 +299,8 @@ extern int main(int argc, char* argv[])
   x2("(?i:xssy)", "xs\xc5\xbfy", 0, 5);
   x2("(?i:xssy)", "x\xc3\x9fy", 0, 4);
   x2("(?i:xssy)", "x\xe1\xba\x9ey", 0, 5);
+  x2("(?i:x\xc3\x9fy)", "xssy", 0, 4);
+  x2("(?i:x\xc3\x9fy)", "xSSy", 0, 4);
   x2("(?i:\xc3\x9f)", "ss", 0, 2);
   x2("(?i:\xc3\x9f)", "SS", 0, 2);
   x2("(?i:[\xc3\x9f])", "ss", 0, 2);
@@ -1204,6 +1207,100 @@ extern int main(int argc, char* argv[])
   x2("a{2,3}+a", "aaa", 0, 3); /* == (?:a{2,3})+*/
   x2("[\\x{0}-\\x{7fffffff}]", "a", 0, 1);
   x2("[\\x{7f}-\\x{7fffffff}]", "\xe5\xae\xb6", 0, 3);
+  x2("[a[cdef]]", "a", 0, 1);
+  n("[a[xyz]-c]", "b");
+  x2("[a[xyz]-c]", "a", 0, 1);
+  x2("[a[xyz]-c]", "-", 0, 1);
+  x2("[a[xyz]-c]", "c", 0, 1);
+  x2("(a.c|def)(.{4})(?<=\\1)", "abcdabc", 0, 7);
+  x2("(a.c)(.{3,}?)(?<!\\1)", "abcabcd", 0, 7);
+  e("(a.c|de)(.{4})(?<=\\1)", "abcdabc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+  e("(a*)(.{3,}?)(?<!\\1)", "abcabcd", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+  x2("(a.c|def)(.{5})(?<=d\\1e)", "abcdabce", 0, 8);
+  x2("(?:(a.*b)|c.*d)(?<!(?(1))azzzb)", "azzzzb", 0, 6);
+  n("(?:(a.*b)|c.*d)(?<!(?(1))azzzb)", "azzzb");
+  e("(a.c|d(?<=\\1))", "abcdabc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
+
+  x2("((?(a)\\g<1>|b))", "aab", 0, 3);
+  x2("((?(a)\\g<1>))", "aab", 0, 2);
+  x2("(b(?(a)|\\g<1>))", "bba", 0, 3);
+  e("(()(?(2)\\g<1>))", "", ONIGERR_NEVER_ENDING_RECURSION);
+  x2("(?(a)(?:b|c))", "ac", 0, 2);
+  n("^(?(a)b|c)", "ac");
+  x2("(?i)a|b", "B", 0, 1);
+  n("((?i)a|b.)|c", "C");
+  n("c(?i)a.|b.", "Caz");
+  x2("c(?i)a|b", "cB", 0, 2); /* == c(?i:a|b) */
+  x2("c(?i)a.|b.", "cBb", 0, 3);
+
+  x2("(?i)st", "st", 0, 2);
+  x2("(?i)st", "St", 0, 2);
+  x2("(?i)st", "sT", 0, 2);
+  x2("(?i)st", "\xC5\xBFt", 0, 3); // U+017F
+  x2("(?i)st", "\xEF\xAC\x85", 0, 3); // U+FB05
+  x2("(?i)st", "\xEF\xAC\x86", 0, 3); // U+FB06
+  x2("(?i)ast", "Ast", 0, 3);
+  x2("(?i)ast", "ASt", 0, 3);
+  x2("(?i)ast", "AsT", 0, 3);
+  x2("(?i)ast", "A\xC5\xBFt", 0, 4); // U+017F
+  x2("(?i)ast", "A\xEF\xAC\x85", 0, 4); // U+FB05
+  x2("(?i)ast", "A\xEF\xAC\x86", 0, 4); // U+FB06
+  x2("(?i)stZ", "stz", 0, 3);
+  x2("(?i)stZ", "Stz", 0, 3);
+  x2("(?i)stZ", "sTz", 0, 3);
+  x2("(?i)stZ", "\xC5\xBFtz", 0, 4); // U+017F
+  x2("(?i)stZ", "\xEF\xAC\x85z", 0, 4); // U+FB05
+  x2("(?i)stZ", "\xEF\xAC\x86z", 0, 4); // U+FB06
+  x2("(?i)BstZ", "bstz", 0, 4);
+  x2("(?i)BstZ", "bStz", 0, 4);
+  x2("(?i)BstZ", "bsTz", 0, 4);
+  x2("(?i)BstZ", "b\xC5\xBFtz", 0, 5); // U+017F
+  x2("(?i)BstZ", "b\xEF\xAC\x85z", 0, 5); // U+FB05
+  x2("(?i)BstZ", "b\xEF\xAC\x86z", 0, 5); // U+FB06
+  x2("(?i).*st\\z", "tttssss\xC5\xBFt", 0, 10); // U+017F
+  x2("(?i).*st\\z", "tttssss\xEF\xAC\x85", 0, 10); // U+FB05
+  x2("(?i).*st\\z", "tttssss\xEF\xAC\x86", 0, 10); // U+FB06
+  x2("(?i).*あstい\\z", "tttssssあ\xC5\xBFtい", 0, 16); // U+017F
+  x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x85い", 0, 16); // U+FB05
+  x2("(?i).*あstい\\z", "tttssssあ\xEF\xAC\x86い", 0, 16); // U+FB06
+  x2("(?i).*\xC5\xBFt\\z", "tttssssst", 0, 9); // U+017F
+  x2("(?i).*\xEF\xAC\x85\\z", "tttssssあst", 0, 12); // U+FB05
+  x2("(?i).*\xEF\xAC\x86い\\z", "tttssssstい", 0, 12); // U+FB06
+  x2("(?i).*\xEF\xAC\x85\\z", "tttssssあ\xEF\xAC\x85", 0, 13);
+
+  x2("(?i).*ss", "abcdefghijklmnopqrstuvwxyz\xc3\x9f", 0, 28); // U+00DF
+  x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyz\xc3\x9fxyz", 0, 31); // U+00DF
+  x2("(?i).*\xc3\x9f", "abcdefghijklmnopqrstuvwxyzss", 0, 28); // U+00DF
+  x2("(?i).*ss.*", "abcdefghijklmnopqrstuvwxyzSSxyz", 0, 31);
+
+  x2("(?i)ssv", "\xc3\x9fv", 0, 3); // U+00DF
+  x2("(?i)(?<=ss)v", "SSv", 2, 3);
+  x2("(?i)(?<=\xc3\x9f)v", "\xc3\x9fv", 2, 3);
+  //x2("(?i)(?<=\xc3\x9f)v", "ssv", 2, 3);
+  //x2("(?i)(?<=ss)v", "\xc3\x9fv", 2, 3);
+
+  /* #156 U+01F0 (UTF-8: C7 B0) */
+  x2("(?i).+Isssǰ", ".+Isssǰ", 0, 8);
+  x2(".+Isssǰ", ".+Isssǰ", 0, 8);
+  x2("(?i)ǰ", "ǰ", 0, 2);
+  x2("(?i)ǰ", "j\xcc\x8c", 0, 3);
+  x2("(?i)j\xcc\x8c", "ǰ", 0, 2);
+  x2("(?i)5ǰ", "5ǰ", 0, 3);
+  x2("(?i)5ǰ", "5j\xcc\x8c", 0, 4);
+  x2("(?i)5j\xcc\x8c", "5ǰ", 0, 3);
+  x2("(?i)ǰv", "ǰV", 0, 3);
+  x2("(?i)ǰv", "j\xcc\x8cV", 0, 4);
+  x2("(?i)j\xcc\x8cv", "ǰV", 0, 3);
+  x2("(?i)[ǰ]", "ǰ", 0, 2);
+  x2("(?i)[ǰ]", "j\xcc\x8c", 0, 3);
+  //x2("(?i)[j]\xcc\x8c", "ǰ", 0, 2);
+  x2("(?i)\ufb00a", "ffa", 0, 3);
+  x2("(?i)ffz", "\xef\xac\x80z", 0, 4);
+  x2("(?i)\u2126", "\xcf\x89", 0, 2);
+  x2("a(?i)\u2126", "a\xcf\x89", 0, 3);
+  x2("(?i)A\u2126", "a\xcf\x89", 0, 3);
+  x2("(?i)A\u2126=", "a\xcf\x89=", 0, 4);
+  x2("(?i:ss)=1234567890", "\xc5\xbf\xc5\xbf=1234567890", 0, 15);
 
   n("   \xfd", ""); /* https://bugs.php.net/bug.php?id=77370 */
   /* can't use \xfc00.. because compiler error: hex escape sequence out of range */
@@ -1212,7 +1309,10 @@ extern int main(int argc, char* argv[])
   e("(?i)000000000000000000000\xf0", "", ONIGERR_INVALID_CODE_POINT_VALUE); /* https://bugs.php.net/bug.php?id=77382 */
   n("0000\\\xf5", "0"); /* https://bugs.php.net/bug.php?id=77385 */
   n("(?i)FFF00000000000000000\xfd", ""); /* https://bugs.php.net/bug.php?id=77394 */
-
+  e("x{55380}{77590}", "", ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE);
+  e("(xyz){40000}{99999}(?<name>vv)", "", ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE);
+  e("f{90000,90000}{80000,80000}", "", ONIGERR_TOO_BIG_NUMBER_FOR_REPEAT_RANGE);
+  n("f{90000,90000}{80000,80001}", "");
 
   x2("\\p{Common}", "\xe3\x8b\xbf", 0, 3);   /* U+32FF */
   x2("\\p{In_Enclosed_CJK_Letters_and_Months}", "\xe3\x8b\xbf", 0, 3); /* U+32FF */
@@ -1223,6 +1323,13 @@ extern int main(int argc, char* argv[])
   e("(?<abc>\\g<abc>)", "zzzz", ONIGERR_NEVER_ENDING_RECURSION);
   e("(?<=(?>abc))", "abc", ONIGERR_INVALID_LOOK_BEHIND_PATTERN);
   e("(*FOO)", "abcdefg", ONIGERR_UNDEFINED_CALLOUT_NAME);
+  e("*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("|*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?i)*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?:*)", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?m:*)", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("(?:)*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_NOT_SPECIFIED);
+  e("^*", "abc", ONIGERR_TARGET_OF_REPEAT_OPERATOR_INVALID);
 
   fprintf(stdout,
        "\nRESULT   SUCC: %4d,  FAIL: %d,  ERROR: %d      (by Oniguruma %s)\n",
