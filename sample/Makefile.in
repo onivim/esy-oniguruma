@@ -89,17 +89,27 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = encode$(EXEEXT) listcap$(EXEEXT) names$(EXEEXT) posix$(EXEEXT) \
-	simple$(EXEEXT) sql$(EXEEXT) syntax$(EXEEXT) \
-	user_property$(EXEEXT) callout$(EXEEXT) echo$(EXEEXT) \
-	count$(EXEEXT) bug_fix$(EXEEXT)
+@ENABLE_POSIX_API_FALSE@TESTS = encode$(EXEEXT) listcap$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	names$(EXEEXT) simple$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	sql$(EXEEXT) syntax$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	user_property$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	callout$(EXEEXT) echo$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	count$(EXEEXT) bug_fix$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	regset$(EXEEXT)
+@ENABLE_POSIX_API_TRUE@TESTS = encode$(EXEEXT) listcap$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	names$(EXEEXT) posix$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	simple$(EXEEXT) sql$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	syntax$(EXEEXT) user_property$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	callout$(EXEEXT) echo$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	count$(EXEEXT) bug_fix$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	regset$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = sample
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -107,10 +117,20 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = encode$(EXEEXT) listcap$(EXEEXT) names$(EXEEXT) \
-	posix$(EXEEXT) simple$(EXEEXT) sql$(EXEEXT) syntax$(EXEEXT) \
-	user_property$(EXEEXT) callout$(EXEEXT) echo$(EXEEXT) \
-	count$(EXEEXT) bug_fix$(EXEEXT)
+@ENABLE_POSIX_API_FALSE@am__EXEEXT_1 = encode$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	listcap$(EXEEXT) names$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	simple$(EXEEXT) sql$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	syntax$(EXEEXT) user_property$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	callout$(EXEEXT) echo$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	count$(EXEEXT) bug_fix$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	regset$(EXEEXT)
+@ENABLE_POSIX_API_TRUE@am__EXEEXT_1 = encode$(EXEEXT) listcap$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	names$(EXEEXT) posix$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	simple$(EXEEXT) sql$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	syntax$(EXEEXT) user_property$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	callout$(EXEEXT) echo$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	count$(EXEEXT) bug_fix$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	regset$(EXEEXT)
 bug_fix_SOURCES = bug_fix.c
 bug_fix_OBJECTS = bug_fix.$(OBJEXT)
 bug_fix_LDADD = $(LDADD)
@@ -147,6 +167,10 @@ am_posix_OBJECTS = posix.$(OBJEXT)
 posix_OBJECTS = $(am_posix_OBJECTS)
 posix_LDADD = $(LDADD)
 posix_DEPENDENCIES = $(lib_onig)
+am_regset_OBJECTS = regset.$(OBJEXT)
+regset_OBJECTS = $(am_regset_OBJECTS)
+regset_LDADD = $(LDADD)
+regset_DEPENDENCIES = $(lib_onig)
 am_simple_OBJECTS = simple.$(OBJEXT)
 simple_OBJECTS = $(am_simple_OBJECTS)
 simple_LDADD = $(LDADD)
@@ -181,8 +205,9 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/bug_fix.Po ./$(DEPDIR)/callout.Po \
 	./$(DEPDIR)/count.Po ./$(DEPDIR)/echo.Po ./$(DEPDIR)/encode.Po \
 	./$(DEPDIR)/listcap.Po ./$(DEPDIR)/names.Po \
-	./$(DEPDIR)/posix.Po ./$(DEPDIR)/simple.Po ./$(DEPDIR)/sql.Po \
-	./$(DEPDIR)/syntax.Po ./$(DEPDIR)/user_property.Po
+	./$(DEPDIR)/posix.Po ./$(DEPDIR)/regset.Po \
+	./$(DEPDIR)/simple.Po ./$(DEPDIR)/sql.Po ./$(DEPDIR)/syntax.Po \
+	./$(DEPDIR)/user_property.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -204,12 +229,14 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = bug_fix.c $(callout_SOURCES) $(count_SOURCES) \
 	$(echo_SOURCES) $(encode_SOURCES) $(listcap_SOURCES) \
-	$(names_SOURCES) $(posix_SOURCES) $(simple_SOURCES) \
-	$(sql_SOURCES) $(syntax_SOURCES) $(user_property_SOURCES)
+	$(names_SOURCES) $(posix_SOURCES) $(regset_SOURCES) \
+	$(simple_SOURCES) $(sql_SOURCES) $(syntax_SOURCES) \
+	$(user_property_SOURCES)
 DIST_SOURCES = bug_fix.c $(callout_SOURCES) $(count_SOURCES) \
 	$(echo_SOURCES) $(encode_SOURCES) $(listcap_SOURCES) \
-	$(names_SOURCES) $(posix_SOURCES) $(simple_SOURCES) \
-	$(sql_SOURCES) $(syntax_SOURCES) $(user_property_SOURCES)
+	$(names_SOURCES) $(posix_SOURCES) $(regset_SOURCES) \
+	$(simple_SOURCES) $(sql_SOURCES) $(syntax_SOURCES) \
+	$(user_property_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -551,7 +578,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -562,6 +588,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_onig = ../src/libonig.la
 LDADD = $(lib_onig)
+AM_CFLAGS = -Wall
 AM_LDFLAGS = -L$(prefix)/lib
 AM_CPPFLAGS = -I$(top_srcdir)/src
 encode_SOURCES = encode.c
@@ -576,6 +603,7 @@ callout_SOURCES = callout.c
 echo_SOURCES = echo.c
 count_SOURCES = count.c
 bug_fix = bug_fix.c
+regset_SOURCES = regset.c
 sampledir = .
 all: all-am
 
@@ -652,6 +680,10 @@ posix$(EXEEXT): $(posix_OBJECTS) $(posix_DEPENDENCIES) $(EXTRA_posix_DEPENDENCIE
 	@rm -f posix$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(posix_OBJECTS) $(posix_LDADD) $(LIBS)
 
+regset$(EXEEXT): $(regset_OBJECTS) $(regset_DEPENDENCIES) $(EXTRA_regset_DEPENDENCIES) 
+	@rm -f regset$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(regset_OBJECTS) $(regset_LDADD) $(LIBS)
+
 simple$(EXEEXT): $(simple_OBJECTS) $(simple_DEPENDENCIES) $(EXTRA_simple_DEPENDENCIES) 
 	@rm -f simple$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(simple_OBJECTS) $(simple_LDADD) $(LIBS)
@@ -682,6 +714,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listcap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/names.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/posix.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/regset.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sql.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/syntax.Po@am__quote@ # am--include-marker
@@ -934,13 +967,6 @@ names.log: names$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-posix.log: posix$(EXEEXT)
-	@p='posix$(EXEEXT)'; \
-	b='posix'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 simple.log: simple$(EXEEXT)
 	@p='simple$(EXEEXT)'; \
 	b='simple'; \
@@ -993,6 +1019,20 @@ count.log: count$(EXEEXT)
 bug_fix.log: bug_fix$(EXEEXT)
 	@p='bug_fix$(EXEEXT)'; \
 	b='bug_fix'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+regset.log: regset$(EXEEXT)
+	@p='regset$(EXEEXT)'; \
+	b='regset'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+posix.log: posix$(EXEEXT)
+	@p='posix$(EXEEXT)'; \
+	b='posix'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1098,6 +1138,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/listcap.Po
 	-rm -f ./$(DEPDIR)/names.Po
 	-rm -f ./$(DEPDIR)/posix.Po
+	-rm -f ./$(DEPDIR)/regset.Po
 	-rm -f ./$(DEPDIR)/simple.Po
 	-rm -f ./$(DEPDIR)/sql.Po
 	-rm -f ./$(DEPDIR)/syntax.Po
@@ -1155,6 +1196,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/listcap.Po
 	-rm -f ./$(DEPDIR)/names.Po
 	-rm -f ./$(DEPDIR)/posix.Po
+	-rm -f ./$(DEPDIR)/regset.Po
 	-rm -f ./$(DEPDIR)/simple.Po
 	-rm -f ./$(DEPDIR)/sql.Po
 	-rm -f ./$(DEPDIR)/syntax.Po
@@ -1200,7 +1242,7 @@ test: $(TESTS)
 	$(sampledir)/encode
 	$(sampledir)/listcap
 	$(sampledir)/names
-	$(sampledir)/posix
+@ENABLE_POSIX_API_TRUE@	$(sampledir)/posix
 	$(sampledir)/simple
 	$(sampledir)/sql
 	$(sampledir)/syntax
@@ -1209,6 +1251,7 @@ test: $(TESTS)
 	$(sampledir)/echo
 	$(sampledir)/count
 	$(sampledir)/bug_fix
+	$(sampledir)/regset
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -87,17 +87,19 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@ENABLE_POSIX_API_FALSE@TESTS = test_utf8$(EXEEXT) testc$(EXEEXT) \
-@ENABLE_POSIX_API_FALSE@	testcu$(EXEEXT)
-@ENABLE_POSIX_API_TRUE@TESTS = test_utf8$(EXEEXT) testc$(EXEEXT) \
-@ENABLE_POSIX_API_TRUE@	testp$(EXEEXT) testcu$(EXEEXT)
+@ENABLE_POSIX_API_FALSE@TESTS = test_utf8$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	test_syntax$(EXEEXT) testc$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	testcu$(EXEEXT) test_regset$(EXEEXT)
+@ENABLE_POSIX_API_TRUE@TESTS = test_utf8$(EXEEXT) test_syntax$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	testc$(EXEEXT) testp$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	testcu$(EXEEXT) test_regset$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -106,17 +108,25 @@ CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @ENABLE_POSIX_API_FALSE@am__EXEEXT_1 = test_utf8$(EXEEXT) \
-@ENABLE_POSIX_API_FALSE@	testc$(EXEEXT) testcu$(EXEEXT)
+@ENABLE_POSIX_API_FALSE@	test_syntax$(EXEEXT) testc$(EXEEXT) \
+@ENABLE_POSIX_API_FALSE@	testcu$(EXEEXT) test_regset$(EXEEXT)
 @ENABLE_POSIX_API_TRUE@am__EXEEXT_1 = test_utf8$(EXEEXT) \
-@ENABLE_POSIX_API_TRUE@	testc$(EXEEXT) testp$(EXEEXT) \
-@ENABLE_POSIX_API_TRUE@	testcu$(EXEEXT)
-am_test_utf8_OBJECTS = test_utf8.$(OBJEXT)
-test_utf8_OBJECTS = $(am_test_utf8_OBJECTS)
-test_utf8_DEPENDENCIES = $(lib_onig)
+@ENABLE_POSIX_API_TRUE@	test_syntax$(EXEEXT) testc$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	testp$(EXEEXT) testcu$(EXEEXT) \
+@ENABLE_POSIX_API_TRUE@	test_regset$(EXEEXT)
+am_test_regset_OBJECTS = test_regset.$(OBJEXT)
+test_regset_OBJECTS = $(am_test_regset_OBJECTS)
+test_regset_DEPENDENCIES = $(lib_onig)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_test_syntax_OBJECTS = test_syntax.$(OBJEXT)
+test_syntax_OBJECTS = $(am_test_syntax_OBJECTS)
+test_syntax_DEPENDENCIES = $(lib_onig)
+am_test_utf8_OBJECTS = test_utf8.$(OBJEXT)
+test_utf8_OBJECTS = $(am_test_utf8_OBJECTS)
+test_utf8_DEPENDENCIES = $(lib_onig)
 am_testc_OBJECTS = testc.$(OBJEXT)
 testc_OBJECTS = $(am_testc_OBJECTS)
 testc_DEPENDENCIES = $(lib_onig)
@@ -144,8 +154,10 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/test_utf8.Po ./$(DEPDIR)/testc.Po \
-	./$(DEPDIR)/testp-testc.Po ./$(DEPDIR)/testu.Po
+am__depfiles_remade = ./$(DEPDIR)/test_regset.Po \
+	./$(DEPDIR)/test_syntax.Po ./$(DEPDIR)/test_utf8.Po \
+	./$(DEPDIR)/testc.Po ./$(DEPDIR)/testp-testc.Po \
+	./$(DEPDIR)/testu.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -165,9 +177,11 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(test_utf8_SOURCES) $(testc_SOURCES) $(testcu_SOURCES) \
+SOURCES = $(test_regset_SOURCES) $(test_syntax_SOURCES) \
+	$(test_utf8_SOURCES) $(testc_SOURCES) $(testcu_SOURCES) \
 	$(testp_SOURCES)
-DIST_SOURCES = $(test_utf8_SOURCES) $(testc_SOURCES) $(testcu_SOURCES) \
+DIST_SOURCES = $(test_regset_SOURCES) $(test_syntax_SOURCES) \
+	$(test_utf8_SOURCES) $(testc_SOURCES) $(testcu_SOURCES) \
 	$(testp_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -510,7 +524,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -525,6 +538,8 @@ AM_CFLAGS = -Wall -Wno-invalid-source-encoding
 AM_CPPFLAGS = -I$(top_srcdir)/src
 test_utf8_SOURCES = test_utf8.c
 test_utf8_LDADD = $(lib_onig)
+test_syntax_SOURCES = test_syntax.c
+test_syntax_LDADD = $(lib_onig)
 testc_SOURCES = testc.c
 testc_LDADD = $(lib_onig)
 testp_SOURCES = testc.c
@@ -532,6 +547,8 @@ testp_LDADD = $(lib_onig)
 testp_CFLAGS = -DPOSIX_TEST -Wall -Wno-invalid-source-encoding
 testcu_SOURCES = testu.c
 testcu_LDADD = $(lib_onig)
+test_regset_SOURCES = test_regset.c
+test_regset_LDADD = $(lib_onig)
 all: all-am
 
 .SUFFIXES:
@@ -575,6 +592,14 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+test_regset$(EXEEXT): $(test_regset_OBJECTS) $(test_regset_DEPENDENCIES) $(EXTRA_test_regset_DEPENDENCIES) 
+	@rm -f test_regset$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_regset_OBJECTS) $(test_regset_LDADD) $(LIBS)
+
+test_syntax$(EXEEXT): $(test_syntax_OBJECTS) $(test_syntax_DEPENDENCIES) $(EXTRA_test_syntax_DEPENDENCIES) 
+	@rm -f test_syntax$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_syntax_OBJECTS) $(test_syntax_LDADD) $(LIBS)
+
 test_utf8$(EXEEXT): $(test_utf8_OBJECTS) $(test_utf8_DEPENDENCIES) $(EXTRA_test_utf8_DEPENDENCIES) 
 	@rm -f test_utf8$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_utf8_OBJECTS) $(test_utf8_LDADD) $(LIBS)
@@ -597,6 +622,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_regset.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_syntax.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_utf8.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testp-testc.Po@am__quote@ # am--include-marker
@@ -849,6 +876,13 @@ test_utf8.log: test_utf8$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_syntax.log: test_syntax$(EXEEXT)
+	@p='test_syntax$(EXEEXT)'; \
+	b='test_syntax'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 testc.log: testc$(EXEEXT)
 	@p='testc$(EXEEXT)'; \
 	b='testc'; \
@@ -859,6 +893,13 @@ testc.log: testc$(EXEEXT)
 testcu.log: testcu$(EXEEXT)
 	@p='testcu$(EXEEXT)'; \
 	b='testcu'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_regset.log: test_regset$(EXEEXT)
+	@p='test_regset$(EXEEXT)'; \
+	b='test_regset'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -963,7 +1004,9 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/test_utf8.Po
+		-rm -f ./$(DEPDIR)/test_regset.Po
+	-rm -f ./$(DEPDIR)/test_syntax.Po
+	-rm -f ./$(DEPDIR)/test_utf8.Po
 	-rm -f ./$(DEPDIR)/testc.Po
 	-rm -f ./$(DEPDIR)/testp-testc.Po
 	-rm -f ./$(DEPDIR)/testu.Po
@@ -1012,7 +1055,9 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/test_utf8.Po
+		-rm -f ./$(DEPDIR)/test_regset.Po
+	-rm -f ./$(DEPDIR)/test_syntax.Po
+	-rm -f ./$(DEPDIR)/test_utf8.Po
 	-rm -f ./$(DEPDIR)/testc.Po
 	-rm -f ./$(DEPDIR)/testp-testc.Po
 	-rm -f ./$(DEPDIR)/testu.Po
@@ -1056,12 +1101,17 @@ uninstall-am:
 test: test_uchar $(TESTS)
 	@echo "[Oniguruma API, UTF-8 check]"
 	@./test_utf8  | grep RESULT
+	@echo "[Oniguruma API, SYNTAX check]"
+	@./test_syntax  | grep RESULT
 	@echo "[Oniguruma API, ASCII/EUC-JP check]"
 	@./testc  | grep RESULT
 @ENABLE_POSIX_API_TRUE@	@echo "[POSIX API, ASCII/EUC-JP check]"
 @ENABLE_POSIX_API_TRUE@	@./testp  | grep RESULT
 	@echo "[Oniguruma API, UTF-16 check]"
 	@./testcu | grep RESULT
+	@echo ""
+	@echo "[Oniguruma API, regset check]"
+	@./test_regset
 
 test_uchar:
 	@echo "[UChar in oniguruma.h check]"
@@ -1070,9 +1120,11 @@ test_uchar:
 
 gcov:
 	make CFLAGS="--coverage" test_utf8
+	make CFLAGS="--coverage" test_syntax
 	make CFLAGS="--coverage" testc
 	make CFLAGS="--coverage" testp
 	make CFLAGS="--coverage" testcu
+	make CFLAGS="--coverage" test_regset
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
