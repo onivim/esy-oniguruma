@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2006  K.Kosako (sndgk393 AT ybb DOT ne DOT jp)
+# Copyright (C) 2006  K.Kosako
 
 ONIG_VERSION=@PACKAGE_VERSION@
 
@@ -35,7 +35,7 @@ while test $# -gt 0; do
   case "$1" in
   -*=*) val=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'`
      ;;
-  *) val= 
+  *) val=
      ;;
   esac
 
