@@ -5,7 +5,7 @@
   "license": "MIT",
   "esy": {
     "build": [
-        ["bash", "-c", "#{os == 'windows' ? 'CFLAGS=-O2 CC=x86_64-w64-mingw32-gcc ./configure --prefix=$cur__install --disable-dependency-tracking' : 'CFLAGS=-O2 ./configure --prefix=$cur__install --disable-dependency-tracking'}"],
+        ["bash", "-c", "#{os == 'windows' ? 'CFLAGS=-O2 CC=x86_64-w64-mingw32-gcc ./configure --prefix=$cur__install --disable-dependency-tracking' : 'CFLAGS=\"-O2 -fPIC\" ./configure --prefix=$cur__install --enable-shared=no --enable-static=yes --disable-dependency-tracking'}"],
         ["make", "install"]
     ],
     "buildsInSource": true,
